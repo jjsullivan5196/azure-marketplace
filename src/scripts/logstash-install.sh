@@ -66,6 +66,7 @@ LOGSTASH_VERSION="6.4.0"
 LOGSTASH_HEAP=0
 ELASTICSEARCH_URL="http://10.0.0.4:9200"
 INSTALL_XPACK=0
+BASIC_SECURITY=0
 INSTALL_ADDITIONAL_PLUGINS=""
 USER_LOGSTASH_PWD="changeme"
 LOGSTASH_KEYSTORE_PWD="changeme"
@@ -130,6 +131,15 @@ while getopts :v:m:u:S:H:G:V:J:L:c:K:Y:lh optname; do
       ;;
   esac
 done
+
+#########################
+# Parameter state changes
+#########################
+
+# supports security features with a basic license
+if [[ $(dpkg --compare-versions "$LOGSTASH_VERSION" "ge" "7.1.0"; echo $?) -eq 0 || ($(dpkg --compare-versions "$LOGSTASH_VERSION" "ge" "6.8.0"; echo $?) -eq 0 && $(dpkg --compare-versions "$LOGSTASH_VERSION" "lt" "7.0.0"; echo $?) -eq 0) ]]; then
+  BASIC_SECURITY=1
+fi
 
 #########################
 # Installation steps as functions
@@ -287,21 +297,34 @@ configure_logstash_yaml()
         log "[configure_logstash_yaml] installed x-pack plugin"
       fi
 
-      echo 'xpack.monitoring.elasticsearch.url: "${ELASTICSEARCH_URL}"' >> $LOGSTASH_CONF
+      if dpkg --compare-versions "$LOGSTASH_VERSION" "lt" "7.0.0"; then
+        echo 'xpack.monitoring.elasticsearch.url: "${ELASTICSEARCH_URL}"' >> $LOGSTASH_CONF
+      else
+        echo 'xpack.monitoring.elasticsearch.hosts: ["${ELASTICSEARCH_URL}"]' >> $LOGSTASH_CONF
+      fi
 
       # assumes Security is enabled, so configure monitoring credentials
       echo "xpack.monitoring.elasticsearch.username: logstash_system" >> $LOGSTASH_CONF
       echo 'xpack.monitoring.elasticsearch.password: "${LOGSTASH_SYSTEM_PASSWORD}"' >> $LOGSTASH_CONF
     elif [[ $XPACK_BUNDLED -eq 0 ]]; then
       # configure monitoring for basic
-      echo 'xpack.monitoring.elasticsearch.url: "${ELASTICSEARCH_URL}"' >> $LOGSTASH_CONF
+      if dpkg --compare-versions "$LOGSTASH_VERSION" "lt" "7.0.0"; then
+        echo 'xpack.monitoring.elasticsearch.url: "${ELASTICSEARCH_URL}"' >> $LOGSTASH_CONF
+      else
+        echo 'xpack.monitoring.elasticsearch.hosts: ["${ELASTICSEARCH_URL}"]' >> $LOGSTASH_CONF
+      fi
     fi
 
     local MONITORING='true'
 
     # Make the HTTP CA cert for communication with Elasticsearch available to
     # Logstash conf files through ${ELASTICSEARCH_CACERT}
-    if [[ -n "${HTTP_CERT}" || -n "${HTTP_CACERT}" && ${INSTALL_XPACK} -ne 0 ]]; then
+    local INSTALL_CERTS=0
+    if [[ ${INSTALL_XPACK} -ne 0 || ${BASIC_SECURITY} -ne 0 ]]; then
+      INSTALL_CERTS=1
+    fi
+
+    if [[ -n "${HTTP_CERT}" || -n "${HTTP_CACERT}" && ${INSTALL_CERTS} -ne 0 ]]; then
 
       MONITORING='false'
 
@@ -325,7 +348,11 @@ configure_logstash_yaml()
             # which will not work for a HTTP cert provided by the user, where logstash communicates through internal loadbalancer.
             # 6.4.0 exposes verification_mode, so set this to none and document.
             if dpkg --compare-versions "$LOGSTASH_VERSION" "ge" "6.4.0"; then
-              echo 'xpack.monitoring.elasticsearch.ssl.ca: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+              if dpkg --compare-versions "$LOGSTASH_VERSION" "lt" "7.0.0"; then
+                echo 'xpack.monitoring.elasticsearch.ssl.ca: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+              else
+                echo 'xpack.monitoring.elasticsearch.ssl.certificate_authority: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+              fi
               echo 'xpack.monitoring.elasticsearch.ssl.verification_mode: none' >> $LOGSTASH_CONF
               MONITORING='true'
             fi
@@ -348,7 +375,11 @@ configure_logstash_yaml()
 
             # HTTP certs created from a HTTP CA provided by the user will include the
             # IP address of the internal loadbalancer, so hostname verification will pass.
-            echo 'xpack.monitoring.elasticsearch.ssl.ca: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+            if dpkg --compare-versions "$LOGSTASH_VERSION" "lt" "7.0.0"; then
+              echo 'xpack.monitoring.elasticsearch.ssl.ca: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+            else
+              echo 'xpack.monitoring.elasticsearch.ssl.certificate_authority: "${ELASTICSEARCH_CACERT}"' >> $LOGSTASH_CONF
+            fi
             MONITORING='true'
         fi
       fi
@@ -369,9 +400,10 @@ configure_logstash_yaml()
     if [[ -n "$YAML_CONFIGURATION" ]]; then
         log "[configure_logstash] include additional yaml configuration"
 
-        local SKIP_LINES="node.name path.data path.logs "
+        local SKIP_LINES="node.name path.data path.logs xpack.monitoring.elasticsearch.url xpack.monitoring.elasticsearch.hosts "
         SKIP_LINES+="xpack.monitoring.elasticsearch.username xpack.monitoring.elasticsearch.password "
-        SKIP_LINES+="xpack.monitoring.enabled xpack.monitoring.elasticsearch.ssl.ca xpack.monitoring.elasticsearch.ssl.verification_mode "
+        SKIP_LINES+="xpack.monitoring.enabled xpack.monitoring.elasticsearch.ssl.ca xpack.monitoring.elasticsearch.ssl.certificate_authority " 
+        SKIP_LINES+="xpack.monitoring.elasticsearch.ssl.verification_mode "
         local SKIP_REGEX="^\s*("$(echo $SKIP_LINES | tr " " "|" | sed 's/\./\\\./g')")"
         IFS=$'\n'
         for LINE in $(echo -e "$YAML_CONFIGURATION"); do
@@ -469,6 +501,7 @@ fi
 
 log "installing logstash $LOGSTASH_VERSION"
 log "installing X-Pack plugins is set to: $INSTALL_XPACK"
+log "basic security it set to: $BASIC_SECURITY"
 log "[apt-get] updating apt-get"
 (apt-get -y update || (sleep 15; apt-get -y update)) > /dev/null
 log "[apt-get] updated apt-get"

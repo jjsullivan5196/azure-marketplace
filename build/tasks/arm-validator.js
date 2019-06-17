@@ -71,9 +71,11 @@ var bootstrapTest = (t, defaultVersion) =>
   testParameters.sshPublicKey.value = config.deployments.ssh;
   testParameters.securityBootstrapPassword.value = config.deployments.securityPassword;
   testParameters.securityAdminPassword.value = config.deployments.securityPassword;
-  testParameters.securityReadPassword.value = config.deployments.securityPassword;
+  testParameters.securityRemoteMonitoringPassword.value = config.deployments.securityPassword;
   testParameters.securityKibanaPassword.value = config.deployments.securityPassword;
   testParameters.securityLogstashPassword.value = config.deployments.securityPassword;
+  testParameters.securityBeatsPassword.value = config.deployments.securityPassword;
+  testParameters.securityApmPassword.value = config.deployments.securityPassword;
   testParameters.esVersion.value = defaultVersion;
 
   // Some parameters are longer than the max allowed characters for cmd on Windows.
@@ -127,8 +129,12 @@ var bootstrap = (cb) => {
 var login = (cb) => {
   var version = [ '--version' ];
   az(version, (error, stdout, stderr) => {
-    if (error || stderr) return bailOut(error || new Error(stderr));
-    log(`Using ${stdout.split('\n')[0]}` );
+    // ignore stderr if it's simply a warning about an older version of Azure CLI
+    if (error || (stderr && !/^WARNING: You have \d+ updates available/.test(stderr))) {
+      return bailOut(error || new Error(stderr));
+    }
+
+    log(`Using ${stdout.split('\n')[0].replace('*', '').replace(/\s\s+/g, ' ')}` );
 
     var login = [ 'login',
       '--service-principal',
@@ -356,7 +362,7 @@ var sanityCheckApplicationGateway = (test, cb) => {
   var appGateway = "application gateway";
 
   var operationList = [ 'network', 'public-ip', 'show',
-    '--name', 'es-app-gateway-ip',
+    '--name', 'app-gateway-ip',
     '--resource-group', rg,
     '--out', 'json'
   ];
@@ -365,7 +371,7 @@ var sanityCheckApplicationGateway = (test, cb) => {
   az(operationList, (error, stdout, stderr) => {
     log(test, `operationPublicIpShowResult: ${stdout || stderr}`);
     if (error || stderr) {
-      log(`getting public ip for ${appGateway} in ${t.name} resulted in error: ${JSON.stringify(e, null, 2)}`);
+      log(`getting public ip for ${appGateway} in ${t.name} resulted in error: ${JSON.stringify(error, null, 2)}`);
       cb();
     }
 

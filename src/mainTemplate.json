@@ -21,24 +21,21 @@
     },
     "esVersion": {
       "type": "string",
-      "defaultValue": "6.5.3",
+      "defaultValue": "7.1.1",
       "allowedValues": [
-        "5.5.3",
-        "5.6.12",
-        "6.0.1",
-        "6.1.3",
+        "5.6.15",
         "6.2.4",
         "6.3.2",
-        "6.4.1",
-        "6.4.2",
         "6.4.3",
-        "6.5.0",
-        "6.5.1",
-        "6.5.2",
-        "6.5.3"
+        "6.5.4",
+        "6.6.2",
+        "6.7.2",
+        "6.8.0",
+        "7.0.1",
+        "7.1.1"
       ],
       "metadata": {
-        "description": "Elasticsearch version to install"
+        "description": "Elastic Stack version to install"
       }
     },
     "esClusterName": {
@@ -57,7 +54,7 @@
         "gateway"
       ],
       "metadata": {
-        "description": "Set up an internal or external load balancer, or use Application Gateway (gateway) for load balancing and SSL offload. If you are setting up Elasticsearch on a publicly available endpoint, it is *strongly recommended* to secure your nodes with a product like Elastic's X-Pack Security"
+        "description": "Set up an internal or external load balancer, or use Application Gateway (gateway) for load balancing and SSL offload. If you are setting up Elasticsearch on a publicly available endpoint, it is *strongly recommended* to secure your nodes with a product like the Elastic Stack's Security features"
       }
     },
     "azureCloudPlugin": {
@@ -95,7 +92,7 @@
       ],
       "defaultValue": "Yes",
       "metadata": {
-        "description": "Install the Commercial X-Pack Plugins - Monitoring, Security, Alerting, Graph, Machine Learning* (Elasticsearch 5.5.0+), and if installing Kibana, Reporting and Profiler"
+        "description": "Install a trial license to enable access to the Elastic Stack platinum features for 30 days. For Elastisearch less than version 6.3.0, a value of 'Yes' enables these features by installing the X-Pack plugin into each deployed Elastic Stack product. For Elastisearch less than version 6.3.0, a value of 'No' does not install the X-Pack plugin and the Elastic Stack is deployed with features available under OSS. For Elasticsearch 6.3.0+, a value of 'No' deploys the Elastic Stack with the basic license level features available."
       }
     },
     "esAdditionalPlugins": {
@@ -123,49 +120,49 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the key and certificate used to secure HTTP layer of Elasticsearch"
+        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the key and certificate used to secure HTTP layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esHttpCertPassword": {
       "type": "securestring",
       "defaultValue": "",
       "metadata": {
-        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the key and certificate used to secure HTTP layer of Elasticsearch"
+        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the key and certificate used to secure HTTP layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esHttpCaCertBlob": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure HTTP layer of Elasticsearch"
+        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure HTTP layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esHttpCaCertPassword": {
       "type": "securestring",
       "defaultValue": "",
       "metadata": {
-        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure HTTP layer of Elasticsearch"
+        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure HTTP layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esTransportCaCertBlob": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure Transport layer of Elasticsearch."
+        "description": "A Base-64 encoded form of the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure Transport layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esTransportCaCertPassword": {
       "type": "securestring",
       "defaultValue": "",
       "metadata": {
-        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure Transport layer of Elasticsearch"
+        "description": "The password for the PKCS#12 archive (.p12/.pfx) containing the CA key and certificate used to secure Transport layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "esTransportCertPassword": {
       "type": "securestring",
       "defaultValue": "",
       "metadata": {
-        "description": "The password for the generated certificate used to secure Transport layer of Elasticsearch"
+        "description": "The password for the generated certificate used to secure Transport layer of Elasticsearch. Requires xpackPlugins be set to 'Yes' or esVersion to be >= 6.8.0 and < 7.0.0, or >= 7.1.0"
       }
     },
     "samlMetadataUri": {
@@ -300,6 +297,11 @@
         "Standard_L8s",
         "Standard_L16s",
         "Standard_L32s",
+        "Standard_L8s_v2",
+        "Standard_L16s_v2",
+        "Standard_L32s_v2",
+        "Standard_L64s_v2",
+        "Standard_L80s_v2",
         "Standard_M8ms",
         "Standard_M16ms",
         "Standard_M32ts",
@@ -479,6 +481,11 @@
         "Standard_L8s",
         "Standard_L16s",
         "Standard_L32s",
+        "Standard_L8s_v2",
+        "Standard_L16s_v2",
+        "Standard_L32s_v2",
+        "Standard_L64s_v2",
+        "Standard_L80s_v2",
         "Standard_M8ms",
         "Standard_M16ms",
         "Standard_M32ts",
@@ -561,7 +568,7 @@
       "defaultValue": "",
       "maxLength": 5,
       "metadata": {
-        "description": "The prefix to use for hostnames when naming virtual machines in the cluster. Can be up to 5 characters in length, must begin with an alphanumeric character and can contain alphanumeric and hyphen characters. Hostnames are used for resolution of master nodes so if you are deploying a cluster into an existing virtual network containing an existing Elasticsearch cluster, be sure to set this to a unique prefix to differentiate the hostnames of this cluster from an existing cluster"
+        "description": "The prefix to use for resources and hostnames when naming virtual machines in the cluster. Can be up to 5 characters in length, must begin with an alphanumeric character and can contain alphanumeric and hyphen characters. Hostnames are used for resolution of master nodes so if you are deploying a cluster into an existing virtual network containing an existing Elasticsearch cluster, be sure to set this to a unique prefix to differentiate the hostnames of this cluster from an existing cluster"
       }
     },
     "vmSizeDataNodes": {
@@ -673,6 +680,11 @@
         "Standard_L8s",
         "Standard_L16s",
         "Standard_L32s",
+        "Standard_L8s_v2",
+        "Standard_L16s_v2",
+        "Standard_L32s_v2",
+        "Standard_L64s_v2",
+        "Standard_L80s_v2",
         "Standard_M8ms",
         "Standard_M16ms",
         "Standard_M32ts",
@@ -714,16 +726,22 @@
     },
     "vmDataDiskSize": {
       "type": "string",
-      "defaultValue": "Large",
+      "defaultValue": "1TiB",
       "allowedValues": [
-        "Small",
-        "Medium",
-        "Large",
-        "XLarge",
-        "XXLarge"
+        "32GiB",
+        "64GiB",
+        "128GiB",
+        "256GiB",
+        "512GiB",
+        "1TiB",
+        "2TiB",
+        "4TiB",
+        "8TiB",
+        "16TiB",
+        "32TiB"
       ],
       "metadata": {
-        "description": "The disk size of each attached disk, Small (128Gb), Medium (512Gb), Large (1024Gb), XLarge (2048Gb) and XXLarge (4095Gb). For Premium Storage, this equates to P10, P20, P30, P40 and P50, respectively."
+        "description": "The disk size of each attached managed disk, 32GiB, 64GiB, 128GiB, 256 GiB, 512GiB, 1TiB, 2TiB, 4TiB, 8TiB, 16TiB and 32TiB. Default is 1TiB. For Premium Storage, this equates to P6, P10, P15, P20, P30, P40, P50, P60, P70 and P80, respectively."
       }
     },
     "vmDataNodeCount": {
@@ -742,7 +760,7 @@
         "Standard"
       ],
       "metadata": {
-        "description": "The storage account type of the attached disks (Default or Standard). The Default storage account type will be Premium Storage for VMs that support Premium Storage and Standard Storage for those that do not."
+        "description": "The storage account type of the attached managed disks and OS disks (Default or Standard). The Default storage account type will be Premium Storage for VMs that support Premium Storage and Standard HDD Storage for those that do not."
       }
     },
     "dataNodesAreMasterEligible": {
@@ -865,6 +883,11 @@
         "Standard_L8s",
         "Standard_L16s",
         "Standard_L32s",
+        "Standard_L8s_v2",
+        "Standard_L16s_v2",
+        "Standard_L32s_v2",
+        "Standard_L64s_v2",
+        "Standard_L80s_v2",
         "Standard_M8ms",
         "Standard_M16ms",
         "Standard_M32ts",
@@ -901,7 +924,7 @@
       "defaultValue": 0,
       "minValue": 0,
       "metadata": {
-        "description": "Number of Elasticsearch coordinating nodes to provision. A value of 0 puts the data nodes on the load balancer"
+        "description": "Number of Elasticsearch coordinating nodes to provision. A value of 0 puts the data nodes in the load balancer backend pool"
       }
     },
     "vmSizeClientNodes": {
@@ -1013,6 +1036,11 @@
         "Standard_L8s",
         "Standard_L16s",
         "Standard_L32s",
+        "Standard_L8s_v2",
+        "Standard_L16s_v2",
+        "Standard_L32s_v2",
+        "Standard_L64s_v2",
+        "Standard_L80s_v2",
         "Standard_M8ms",
         "Standard_M16ms",
         "Standard_M32ts",
@@ -1087,12 +1115,6 @@
         "description": "Password for the built-in 'elastic' user. Should be 12 characters or more, with a minimum of 6 characters"
       }
     },
-    "securityReadPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the 'es_read' user with user (read-only) role. Should be 12 characters or more, with a minimum of 6 characters"
-      }
-    },
     "securityKibanaPassword": {
       "type": "securestring",
       "metadata": {
@@ -1102,13 +1124,25 @@
     "securityLogstashPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the 'logstash_system' user. Should be 12 characters or more, with a minimum of 6 characters"
+        "description": "Password for the built-in 'logstash_system' user. Should be 12 characters or more, with a minimum of 6 characters"
       }
     },
     "securityBeatsPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the 'beats_system' user. Should be 12 characters or more, with a minimum of 6 characters. Required for Elasticsearch 6.3.0+ when xpackPlugins is 'Yes'"
+        "description": "Password for the built-in 'beats_system' user. Should be 12 characters or more, with a minimum of 6 characters. Required for Elasticsearch 6.3.0+ when xpackPlugins is 'Yes'"
+      }
+    },
+    "securityApmPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the built-in 'apm_system' user. Should be 12 characters or more, with a minimum of 6 characters. Required for Elasticsearch 6.5.0+ when xpackPlugins is 'Yes'"
+      }
+    },
+    "securityRemoteMonitoringPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the built-in 'remote_monitoring_user' user. Should be 12 characters or more, with a minimum of 6 characters. Required for Elasticsearch 6.5.0+ when xpackPlugins is 'Yes'"
       }
     },
     "location": {
@@ -1262,6 +1296,8 @@
     }
   },
   "variables": {
+    "esVersionMajor": "[int(split(parameters('esVersion'), '.')[0])]",
+    "esVersionMinor": "[int(split(parameters('esVersion'), '.')[1])]",
     "templateBaseUrl": "[concat(parameters('artifactsBaseUrl'), '/')]",
     "sharedTemplateUrl": "[concat(variables('templateBaseUrl'), 'partials/shared-resources.json')]",
     "networkTemplateUrl": "[concat(variables('templateBaseUrl'), 'networks/virtual-network-resources.json')]",
@@ -1293,10 +1329,11 @@
       "transportCaCertPassword": "[parameters('esTransportCaCertPassword')]",
       "transportCertPassword": "[parameters('esTransportCertPassword')]",
       "securityAdminPwd": "[parameters('securityAdminPassword')]",
-      "securityReadPwd": "[parameters('securityReadPassword')]",
       "securityKibanaPwd": "[parameters('securityKibanaPassword')]",
       "securityLogstashPwd": "[parameters('securityLogstashPassword')]",
       "securityBeatsPwd": "[parameters('securityBeatsPassword')]",
+      "securityApmPwd": "[parameters('securityApmPassword')]",
+      "securityRemoteMonitoringPwd": "[parameters('securityRemoteMonitoringPassword')]",
       "securityBootstrapPwd": "[if(not(empty(parameters('securityBootstrapPassword'))),parameters('securityBootstrapPassword'),uniqueString(resourceGroup().id, deployment().name, parameters('securityAdminPassword')))]",
       "samlMetadataUri": "[parameters('samlMetadataUri')]",
       "samlServiceProviderUri": "[parameters('samlServiceProviderUri')]"
@@ -1726,6 +1763,26 @@
         "dataDisks": 64,
         "storageAccountType": "Premium_LRS"
       },
+      "Standard_L8s_v2": {
+        "dataDisks": 16,
+        "storageAccountType": "Premium_LRS"
+      },
+      "Standard_L16s_v2": {
+        "dataDisks": 32,
+        "storageAccountType": "Premium_LRS"
+      },
+      "Standard_L32s_v2": {
+        "dataDisks": 32,
+        "storageAccountType": "Premium_LRS"
+      },
+      "Standard_L64s_v2": {
+        "dataDisks": 32,
+        "storageAccountType": "Premium_LRS"
+      },
+      "Standard_L80s_v2": {
+        "dataDisks": 32,
+        "storageAccountType": "Premium_LRS"
+      },
       "Standard_M8ms": {
         "dataDisks": 8,
         "storageAccountType": "Premium_LRS"
@@ -1784,29 +1841,35 @@
       }
     },
     "dataDiskSizes": {
-      "XXLarge": 4095,
-      "XLarge": 2048,
-      "Large": 1024,
-      "Medium": 512,
-      "Small": 128
+      "32GiB": 32,
+      "64GiB": 64,
+      "128GiB": 128,
+      "256GiB": 256,
+      "512GiB": 512,
+      "1TiB": 1024,
+      "2TiB": 2048,
+      "4TiB": 4096,
+      "8TiB": 8192,
+      "16TiB": 16384,
+      "32TiB": 32767
     },
     "backendPoolConfigurations": {
       "internal": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers','es-internal-lb'),'/backendAddressPools/LBBE')]"
+          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
         }
       ],
       "external": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers','es-internal-lb'),'/backendAddressPools/LBBE')]"
+          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
         },
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers','es-external-lb'),'/backendAddressPools/LBBE')]"
+          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'external-lb')),'/backendAddressPools/LBBE')]"
         }
       ],
       "gateway": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers','es-internal-lb'),'/backendAddressPools/LBBE')]"
+          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
         }
       ]
     },
@@ -1873,10 +1936,11 @@
     },
     "networkSettings": {
       "name": "[parameters('vNetName')]",
+      "namespacePrefix": "[parameters('vmHostNamePrefix')]",
       "resourceGroup": "[variables('networkResourceGroupMap')[parameters('vNetNewOrExisting')]]",
       "location": "[variables('location')]",
       "addressPrefix": "[parameters('vNetNewAddressPrefix')]",
-      "https": "[if(and(or(greater(length(parameters('esHttpCertBlob')), 0), greater(length(parameters('esHttpCaCertBlob')), 0)), equals(parameters('xpackPlugins'), 'Yes')), 'Yes', 'No')]",
+      "https": "[if(and(or(greater(length(parameters('esHttpCertBlob')), 0), greater(length(parameters('esHttpCaCertBlob')), 0)), or(equals(parameters('xpackPlugins'), 'Yes'), and(greaterOrEquals(variables('esVersionMajor'), 7), greaterOrEquals(variables('esVersionMinor'), 1)), and(equals(variables('esVersionMajor'), 6), greaterOrEquals(variables('esVersionMinor'), 8)))), 'Yes', 'No')]",
       "subnet": {
         "name": "[parameters('vNetClusterSubnetName')]",
         "addressPrefix": "[parameters('vNetNewClusterSubnetAddressPrefix')]",

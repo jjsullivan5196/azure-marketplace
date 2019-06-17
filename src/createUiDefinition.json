@@ -54,25 +54,13 @@
             "name": "esVersion",
             "type": "Microsoft.Common.DropDown",
             "label": "Elasticsearch version",
-            "defaultValue": "v6.5.3",
+            "defaultValue": "v7.1.1",
             "toolTip": "Choose a version of Elasticsearch.",
             "constraints": {
               "allowedValues": [
                 {
-                  "label": "v5.5.3",
-                  "value": "5.5.3"
-                },
-                {
-                  "label": "v5.6.12",
-                  "value": "5.6.12"
-                },
-                {
-                  "label": "v6.0.1",
-                  "value": "6.0.1"
-                },
-                {
-                  "label": "v6.1.3",
-                  "value": "6.1.3"
+                  "label": "v5.6.15",
+                  "value": "5.6.15"
                 },
                 {
                   "label": "v6.2.4",
@@ -83,32 +71,32 @@
                   "value": "6.3.2"
                 },
                 {
-                  "label": "v6.4.1",
-                  "value": "6.4.1"
-                },
-                {
-                  "label": "v6.4.2",
-                  "value": "6.4.2"
-                },
-                {
                   "label": "v6.4.3",
                   "value": "6.4.3"
                 },
                 {
-                  "label": "v6.5.0",
-                  "value": "6.5.0"
+                  "label": "v6.5.4",
+                  "value": "6.5.4"
                 },
                 {
-                  "label": "v6.5.1",
-                  "value": "6.5.1"
+                  "label": "v6.6.2",
+                  "value": "6.6.2"
                 },
                 {
-                  "label": "v6.5.2",
-                  "value": "6.5.2"
+                  "label": "v6.7.2",
+                  "value": "6.7.2"
                 },
                 {
-                  "label": "v6.5.3",
-                  "value": "6.5.3"
+                  "label": "v6.8.0",
+                  "value": "6.8.0"
+                },
+                {
+                  "label": "v7.0.1",
+                  "value": "7.0.1"
+                },
+                {
+                  "label": "v7.1.1",
+                  "value": "7.1.1"
                 }
               ]
             }
@@ -407,6 +395,11 @@
                     "Standard_L8s",
                     "Standard_L16s",
                     "Standard_L32s",
+                    "Standard_L8s_v2",
+                    "Standard_L16s_v2",
+                    "Standard_L32s_v2",
+                    "Standard_L64s_v2",
+                    "Standard_L80s_v2",
                     "Standard_M8ms",
                     "Standard_M16ms",
                     "Standard_M32ts",
@@ -469,29 +462,53 @@
                 "type": "Microsoft.Common.DropDown",
                 "label": "Size of each managed disk",
                 "visible": "[greater(steps('nodesStep').dataNodesDisks.vmDataDiskCount, 0)]",
-                "defaultValue": "Large (1024Gb)",
+                "defaultValue": "1TiB",
                 "toolTip": "The size of each data disk to attach to each data node",
                 "constraints": {
                   "allowedValues": [
                     {
-                      "label": "Small (128Gb)",
-                      "value": "Small"
+                      "label": "32GiB",
+                      "value": "32GiB"
                     },
                     {
-                      "label": "Medium (512Gb)",
-                      "value": "Medium"
+                      "label": "64GiB",
+                      "value": "64GiB"
                     },
                     {
-                      "label": "Large (1024Gb)",
-                      "value": "Large"
+                      "label": "128GiB",
+                      "value": "128GiB"
                     },
                     {
-                      "label": "Extra Large (2048Gb)",
-                      "value": "XLarge"
+                      "label": "256GiB",
+                      "value": "256GiB"
                     },
                     {
-                      "label": "Extra Extra Large (4095Gb)",
-                      "value": "XXLarge"
+                      "label": "512GiB",
+                      "value": "512GiB"
+                    },
+                    {
+                      "label": "1TiB",
+                      "value": "1TiB"
+                    },
+                    {
+                      "label": "2TiB",
+                      "value": "2TiB"
+                    },
+                    {
+                      "label": "4TiB",
+                      "value": "4TiB"
+                    },
+                    {
+                      "label": "8TiB",
+                      "value": "8TiB"
+                    },
+                    {
+                      "label": "16TiB",
+                      "value": "16TiB"
+                    },
+                    {
+                      "label": "32TiB",
+                      "value": "32TiB"
                     }
                   ]
                 }
@@ -641,6 +658,11 @@
                     "Standard_L8s",
                     "Standard_L16s",
                     "Standard_L32s",
+                    "Standard_L8s_v2",
+                    "Standard_L16s_v2",
+                    "Standard_L32s_v2",
+                    "Standard_L64s_v2",
+                    "Standard_L80s_v2",
                     "Standard_M8ms",
                     "Standard_M16ms",
                     "Standard_M32ts",
@@ -856,6 +878,11 @@
                     "Standard_L8s",
                     "Standard_L16s",
                     "Standard_L32s",
+                    "Standard_L8s_v2",
+                    "Standard_L16s_v2",
+                    "Standard_L32s_v2",
+                    "Standard_L64s_v2",
+                    "Standard_L80s_v2",
                     "Standard_M8ms",
                     "Standard_M16ms",
                     "Standard_M32ts",
@@ -1028,6 +1055,11 @@
                     "Standard_L8s",
                     "Standard_L16s",
                     "Standard_L32s",
+                    "Standard_L8s_v2",
+                    "Standard_L16s_v2",
+                    "Standard_L32s_v2",
+                    "Standard_L64s_v2",
+                    "Standard_L80s_v2",
                     "Standard_M8ms",
                     "Standard_M16ms",
                     "Standard_M32ts",
@@ -1191,6 +1223,11 @@
                     "Standard_L8s",
                     "Standard_L16s",
                     "Standard_L32s",
+                    "Standard_L8s_v2",
+                    "Standard_L16s_v2",
+                    "Standard_L32s_v2",
+                    "Standard_L64s_v2",
+                    "Standard_L80s_v2",
                     "Standard_M8ms",
                     "Standard_M16ms",
                     "Standard_M32ts",
@@ -1393,18 +1430,18 @@
             ]
           },
           {
-            "name": "es_read",
+            "name": "es_apm",
             "type": "Microsoft.Common.Section",
-            "label": "es_read (read only) user account",
+            "label": "APM system user account",
             "elements": [
               {
-                "name": "securityReadPassword",
+                "name": "securityApmPassword",
                 "type": "Microsoft.Common.PasswordBox",
                 "label": {
-                  "password": "'es_read' user password",
+                  "password": "'apm_system' built-in user password",
                   "confirmPassword": "Confirm password"
                 },
-                "toolTip": "Password to use for the 'es_read' user. This is a user account configured with limited read-only access",
+                "toolTip": "Password to use for the built-in 'apm_system' user. This is a built-in account that APM server uses to communicate with Elasticsearch. Required for Elasticsearch 6.5.0+",
                 "constraints": {
                   "required": true,
                   "regex": "^.{12,}",
@@ -1413,6 +1450,269 @@
                 "options": {
                   "hideConfirmation": false
                 }
+              }
+            ]
+          },
+          {
+            "name": "es_remote",
+            "type": "Microsoft.Common.Section",
+            "label": "Remote monitoring user system user account",
+            "elements": [
+              {
+                "name": "securityRemoteMonitoringPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "'remote_monitoring_user' built-in user password",
+                  "confirmPassword": "Confirm password"
+                },
+                "toolTip": "Password to use for the built-in 'remote_monitoring_user' user. This is a built-in account that Metricbeat uses when collecting and storing monitoring information in Elasticsearch. Required for Elasticsearch 6.5.0+",
+                "constraints": {
+                  "required": true,
+                  "regex": "^.{12,}",
+                  "validationMessage": "Password must be at least 12 characters long"
+                },
+                "options": {
+                  "hideConfirmation": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "certificatesStep",
+        "label": "Certificates",
+        "subLabel": {
+          "preValidation": "Required",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Certificates",
+        "elements": [
+          {
+            "name": "certs",
+            "type": "Microsoft.Common.OptionsGroup",
+            "label": "Configure Transport Layer Security",
+            "defaultValue": "Yes",
+            "toolTip": "Whether to configure Transport Layer Security (SSL/TLS) for Elasticsearch and Kibana, using supplied certificates",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "Yes",
+                  "value": "Yes"
+                },
+                {
+                  "label": "No",
+                  "value": "No"
+                }
+              ]
+            }
+          },
+          {
+            "name": "esHttpCerts",
+            "type": "Microsoft.Common.Section",
+            "label": "Elasticsearch HTTP layer",
+            "visible": "[equals(steps('certificatesStep').certs, 'Yes')]",
+            "elements": [
+              {
+                "name": "esHttpCert",
+                "type": "Microsoft.Common.OptionsGroup",
+                "label": "HTTP certificate type",
+                "defaultValue": "Certificate",
+                "toolTip": "Whether to provide a single PKCS#12 archive containing the certificate and key with which to secure the HTTP layer, or provide a PKCS#12 archive containing a Certificate Authority (CA) and key with which to generate a certificate for each node in the cluster.",
+                "constraints": {
+                  "allowedValues": [
+                    {
+                      "label": "Certificate",
+                      "value": "cert"
+                    },
+                    {
+                      "label": "Certificate Authority (CA)",
+                      "value": "ca"
+                    }
+                  ]
+                },
+                "visible": true
+              },
+              {
+                "name": "esHttpCaCertBlob",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "HTTP Certificate Authority (CA) certificate",
+                "toolTip": "A PKCS#12 archive containing the Certificate Authority (CA) certificate and private key with which to generate a certificate for each node within the cluster for securing the HTTP layer. A CA certificate can be generated using a number of different tools including elasticsearch-certutil, openssl, amongst others",
+                "constraints": {
+                  "required": false,
+                  "accept": ".p12,.pfx"
+                },
+                "options": {
+                  "multiple": false,
+                  "openMode": "binary",
+                  "uploadMode": "file",
+                  "encoding": "UTF-8"
+                },
+                "visible": "[equals(steps('certificatesStep').esHttpCerts.esHttpCert, 'ca')]"
+              },
+              {
+                "name": "esHttpCaCertPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "HTTP Certificate Authority password",
+                  "confirmPassword": "Confirm HTTP Certificate Authority password"
+                },
+                "toolTip": "Optional passphrase for the PKCS#12 archive containing the Certificate Authority (CA) certificate and key used to generate a certificate for each node within the cluster for securing the HTTP layer",
+                "constraints": {
+                  "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "visible": "[equals(steps('certificatesStep').esHttpCerts.esHttpCert, 'ca')]"
+              },
+              {
+                "name": "esHttpCertBlob",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "HTTP certificate",
+                "toolTip": "A PKCS#12 archive containing the certificate and private key with which to secure the HTTP layer. This certificate will be used by all nodes within the cluster",
+                "constraints": {
+                  "required": false,
+                  "accept": ".p12,.pfx"
+                },
+                "options": {
+                  "multiple": false,
+                  "openMode": "binary",
+                  "uploadMode": "file",
+                  "encoding": "UTF-8"
+                },
+                "visible": "[equals(steps('certificatesStep').esHttpCerts.esHttpCert, 'cert')]"
+              },
+              {
+                "name": "esHttpCertPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "HTTP certificate password",
+                  "confirmPassword": "Confirm HTTP certificate password"
+                },
+                "toolTip": "Optional passphrase for the PKCS#12 archive containing the certificate and key with which to secure the HTTP layer. If a Certificate Authority is provided for the HTTP layer, this passphrase will be used to protect PKCS#12 archives generated by the Certificate Authority",
+                "constraints": {
+                  "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "visible": true
+              }
+            ]
+          },
+          {
+            "name": "esTransportCerts",
+            "type": "Microsoft.Common.Section",
+            "label": "Elasticsearch Transport layer",
+            "visible": "[equals(steps('certificatesStep').certs, 'Yes')]",
+            "elements": [
+              {
+                "name": "esTransportCaCertBlob",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "Transport Certificate Authority (CA) certificate",
+                "toolTip": "A PKCS#12 archive containing the Certificate Authority (CA) certificate and private key, used to generate a unique certificate for each node within the cluster to secure the Transport layer. A CA certificate can be generated using a number of different tools including elasticsearch-certutil, openssl, amongst others",
+                "constraints": {
+                  "required": false,
+                  "accept": ".p12,.pfx"
+                },
+                "options": {
+                  "multiple": false,
+                  "openMode": "binary",
+                  "uploadMode": "file",
+                  "encoding": "UTF-8"
+                },
+                "visible": true
+              },
+              {
+                "name": "esTransportCaCertPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "Transport Certificate Authority password",
+                  "confirmPassword": "Confirm Transport Certificate Authority password"
+                },
+                "toolTip": "Optional passphrase for the PKCS#12 archive containing the Certificate Authority (CA) certificate and private key",
+                "constraints": {
+                  "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "visible": true
+              },
+              {
+                "name": "esTransportCertPassword",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "Transport certificate password",
+                  "confirmPassword": "Confirm Transport certificate password"
+                },
+                "toolTip": "Optional passphrase used to protect each PKCS#12 archive generated by the Certificate Authority and used to secure the Transport layer",
+                "constraints": {
+                  "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "visible": true
+              }
+            ]
+          },
+          {
+            "name": "kibanaCerts",
+            "type": "Microsoft.Common.Section",
+            "label": "Kibana",
+            "visible": "[equals(steps('certificatesStep').certs, 'Yes')]",
+            "elements": [
+              {
+                "name": "kibanaCertBlob",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "Kibana certificate file",
+                "toolTip": "A PEM certificate used to secure communication between the browser and Kibana.",
+                "constraints": {
+                  "required": false,
+                  "accept": ".crt,.cer"
+                },
+                "options": {
+                  "multiple": false,
+                  "openMode": "binary",
+                  "uploadMode": "file",
+                  "encoding": "UTF-8"
+                },
+                "visible": "[equals(steps('externalAccessStep').kibanaSection.kibana, 'Yes')]"
+              },
+              {
+                "name": "kibanaKeyBlob",
+                "type": "Microsoft.Common.FileUpload",
+                "label": "Kibana key file",
+                "toolTip": "The private key for the PEM certificate used to secure communication between the browser and Kibana.",
+                "constraints": {
+                  "required": false,
+                  "accept": ".key"
+                },
+                "options": {
+                  "multiple": false,
+                  "openMode": "binary",
+                  "uploadMode": "file",
+                  "encoding": "UTF-8"
+                },
+                "visible": "[equals(steps('externalAccessStep').kibanaSection.kibana, 'Yes')]"
+              },
+              {
+                "name": "kibanaKeyPassphrase",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "Kibana key password",
+                  "confirmPassword": "Confirm Kibana key password"
+                },
+                "toolTip": "Optional passphrase for the private key for the PEM certificate used to secure communication between the browser and Kibana.",
+                "constraints": {
+                  "required": false
+                },
+                "options": {
+                  "hideConfirmation": false
+                },
+                "visible": "[equals(steps('externalAccessStep').kibanaSection.kibana, 'Yes')]"
               }
             ]
           }
@@ -1428,13 +1728,13 @@
       "xpackPlugins": "Yes",
       "esAdditionalPlugins": "",
       "esAdditionalYaml": "",
-      "esHttpCertBlob": "",
-      "esHttpCertPassword": "",
-      "esHttpCaCertBlob": "",
-      "esHttpCaCertPassword": "",
-      "esTransportCaCertBlob": "",
-      "esTransportCaCertPassword": "",
-      "esTransportCertPassword": "",
+      "esHttpCertBlob": "[steps('certificatesStep').esHttpCerts.esHttpCertBlob]",
+      "esHttpCertPassword": "[steps('certificatesStep').esHttpCerts.esHttpCertPassword]",
+      "esHttpCaCertBlob": "[steps('certificatesStep').esHttpCerts.esHttpCaCertBlob]",
+      "esHttpCaCertPassword": "[steps('certificatesStep').esHttpCerts.esHttpCaCertPassword]",
+      "esTransportCaCertBlob": "[steps('certificatesStep').esTransportCerts.esTransportCaCertBlob]",
+      "esTransportCaCertPassword": "[steps('certificatesStep').esTransportCerts.esTransportCaCertPassword]",
+      "esTransportCertPassword": "[steps('certificatesStep').esTransportCerts.esTransportCertPassword]",
       "samlMetadataUri": "",
       "samlServiceProviderUri": "",
       "esHeapSize": 0,
@@ -1451,9 +1751,9 @@
       "kibana": "[steps('externalAccessStep').kibanaSection.kibana]",
       "vmSizeKibana": "[steps('externalAccessStep').kibanaSection.vmSizeKibana]",
       "vmKibanaAcceleratedNetworking": "Default",
-      "kibanaKeyBlob": "",
-      "kibanaCertBlob": "",
-      "kibanaKeyPassphrase": "",
+      "kibanaKeyBlob": "[steps('certificatesStep').kibanaCerts.kibanaKeyBlob]",
+      "kibanaCertBlob": "[steps('certificatesStep').kibanaCerts.kibanaCertBlob]",
+      "kibanaKeyPassphrase": "[steps('certificatesStep').kibanaCerts.kibanaKeyPassphrase]",
       "kibanaAdditionalYaml": "",
       "logstash": "[steps('externalAccessStep').logstashSection.logstash]",
       "vmSizeLogstash": "[steps('externalAccessStep').logstashSection.vmSizeLogstash]",
@@ -1483,10 +1783,11 @@
       "sshPublicKey": "[basics('password').sshPublicKey]",
       "securityBootstrapPassword": "",
       "securityAdminPassword": "[steps('securityStep').es_admin.securityAdminPassword]",
-      "securityReadPassword": "[steps('securityStep').es_read.securityReadPassword]",
       "securityKibanaPassword": "[steps('securityStep').es_kibana.securityKibanaPassword]",
       "securityLogstashPassword": "[steps('securityStep').es_logstash.securityLogstashPassword]",
       "securityBeatsPassword": "[steps('securityStep').es_beats.securityBeatsPassword]",
+      "securityApmPassword": "[steps('securityStep').es_apm.securityApmPassword]",
+      "securityRemoteMonitoringPassword": "[steps('securityStep').es_remote.securityRemoteMonitoringPassword]",
       "appGatewayTier": "Standard",
       "appGatewaySku": "Small",
       "appGatewayCount": 1,
