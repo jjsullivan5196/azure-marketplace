@@ -67,10 +67,15 @@ install_metricbeat()
 configure_metricbeat()
 {
     local CONFIG="/etc/metricbeat/metricbeat.yml"
-    yq w -i "$CONFIG" "output.elasticsearch.hosts[+]" "${LOGGING_URL}"
-    yq w -i "$CONFIG" "output.elasticsearch.protocol" "https"
-    yq w -i "$CONFIG" "output.elasticsearch.username" "${LOGGING_USER}"
-    yq w -i "$CONFIG" "output.elasticsearch.password" "${LOGGING_PASS}"
+    {
+        echo -e "output.elasticsearch:"
+        echo -e "  hosts: ['${LOGGING_URL}']"
+        echo -e "  username: ${LOGGING_USER}"
+        echo -e "  password: ${LOGGING_PASS}"
+    } > script.yml
+
+    yq w -i "$CONFIG" -s script.yml
+    rm script.yml
 }
 
 install_yq()
