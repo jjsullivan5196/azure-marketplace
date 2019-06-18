@@ -1375,6 +1375,12 @@
       "samlMetadataUri": "[parameters('samlMetadataUri')]",
       "samlServiceProviderUri": "[parameters('samlServiceProviderUri')]"
     },
+	"metricbeatSettings": {
+	  "enabled": "[parameters('metricbeat')]",
+	  "host": "[parameters('metricbeatHost')]",
+	  "user": "[parameters('metricbeatUser')]",
+	  "pass": "[parameters('metricbeatPassword')]"
+	},
     "networkResourceGroupMap": {
       "new": "[resourceGroup().name]",
       "existing": "[parameters('vNetExistingResourceGroup')]"
@@ -2162,6 +2168,9 @@
           "esSettings": {
             "value": "[variables('esSettings')]"
           },
+		  "metricbeatSettings": {
+			"value": "[variables('metricbeatSettings')]"
+		  },
           "commonVmSettings": {
             "value": "[variables('commonVmSettings')]"
           },
