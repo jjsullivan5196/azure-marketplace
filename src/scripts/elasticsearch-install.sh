@@ -1166,6 +1166,7 @@ configure_elasticsearch()
     log "[configure_elasticsearch] configure elasticsearch heap size - $ES_HEAP megabytes"
     sed -i -e "s/^\-Xmx.*/-Xmx${ES_HEAP}m/" /etc/elasticsearch/jvm.options
     sed -i -e "s/^\-Xms.*/-Xms${ES_HEAP}m/" /etc/elasticsearch/jvm.options
+    sed -i -E -e 's/^\-XX:\+HeapDumpOnOutOfMemoryError/#-XX:+HeapDumpOnOutOfMemoryError/g' /etc/elaticsearch/jvm.options
     echo "-Des.allow_insecure_settings=true" >> /etc/elasticsearch/jvm.options
 }
 
@@ -1182,7 +1183,7 @@ configure_os_properties()
     {
       echo "[Service]"
       echo "LimitMEMLOCK=infinity"
-    } >> $SYSTEMD_OVERRIDES/override.conf
+    } > $SYSTEMD_OVERRIDES/override.conf
 
     log "[configure_os_properties] configure systemd to start Elasticsearch service automatically when system boots"
     systemctl daemon-reload
