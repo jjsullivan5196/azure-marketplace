@@ -2,11 +2,18 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "artifactsBaseUrl": {
+    "_artifactsLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/elastic/azure-marketplace/master/src",
+      "defaultValue": "https://raw.githubusercontent.com/elastic/azure-marketplace/master/src/",
       "metadata": {
-        "artifactsBaseUrl": "Base URL of the Elastic template gallery package"
+        "description": "The base URI where artifacts required by this template are located, including a trailing '/'"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The sasToken required to access _artifactsLocation. When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
       }
     },
     "elasticTags": {
@@ -21,7 +28,7 @@
     },
     "esVersion": {
       "type": "string",
-      "defaultValue": "7.1.1",
+      "defaultValue": "7.2.0",
       "allowedValues": [
         "5.6.15",
         "6.2.4",
@@ -32,7 +39,8 @@
         "6.7.2",
         "6.8.0",
         "7.0.1",
-        "7.1.1"
+        "7.1.1",
+        "7.2.0"
       ],
       "metadata": {
         "description": "Elastic Stack version to install"
@@ -55,6 +63,28 @@
       ],
       "metadata": {
         "description": "Set up an internal or external load balancer, or use Application Gateway (gateway) for load balancing and SSL offload. If you are setting up Elasticsearch on a publicly available endpoint, it is *strongly recommended* to secure your nodes with a product like the Elastic Stack's Security features"
+      }
+    },
+    "loadBalancerInternalSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "The internal load balancer SKU type."
+      }
+    },
+    "loadBalancerExternalSku": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard"
+      ],
+      "metadata": {
+        "description": "The external load balancer SKU type. Only valid when loadBalancerType is 'external'"
       }
     },
     "azureCloudPlugin": {
@@ -503,6 +533,14 @@
       ],
       "metadata": {
         "description": "Size of the Logstash nodes"
+      }
+    },
+    "vmLogstashCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "metadata": {
+        "description": "The number of Logstash VMs to deploy"
       }
     },
     "vmLogstashAcceleratedNetworking": {
@@ -1298,16 +1336,15 @@
   "variables": {
     "esVersionMajor": "[int(split(parameters('esVersion'), '.')[0])]",
     "esVersionMinor": "[int(split(parameters('esVersion'), '.')[1])]",
-    "templateBaseUrl": "[concat(parameters('artifactsBaseUrl'), '/')]",
-    "sharedTemplateUrl": "[concat(variables('templateBaseUrl'), 'partials/shared-resources.json')]",
-    "networkTemplateUrl": "[concat(variables('templateBaseUrl'), 'networks/virtual-network-resources.json')]",
+    "sharedTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/shared-resources.json', parameters('_artifactsLocationSasToken')))]",
+    "networkTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('networks/virtual-network-resources.json', parameters('_artifactsLocationSasToken')))]",
     "loadBalancerOptions": {
       "internal": "internal-lb-resources",
       "external": "external-lb-resources",
       "gateway": "[concat(toLower(parameters('appGatewayTier')),'-application-gateway-resources')]"
     },
-    "loadBalancerTemplateUrl": "[concat(variables('templateBaseUrl'), 'loadbalancers/', variables('loadBalancerOptions')[parameters('loadBalancerType')],'.json')]",
-    "osSettingsTemplateUrl": "[concat(variables('templateBaseUrl'), 'settings/ubuntuSettings.json')]",
+    "loadBalancerTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('loadbalancers/', variables('loadBalancerOptions')[parameters('loadBalancerType')],'.json', parameters('_artifactsLocationSasToken')))]",
+    "osSettingsTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('settings/ubuntuSettings.json', parameters('_artifactsLocationSasToken')))]",
     "location": "[parameters('location')]",
     "azureCloudStorageAccount": {
       "name": "[parameters('azureCloudStorageAccountName')]",
@@ -1862,20 +1899,20 @@
     "backendPoolConfigurations": {
       "internal": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
+          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', concat(parameters('vmHostNamePrefix'), 'internal-lb'), 'LBBE')]"
         }
       ],
       "external": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
+          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', concat(parameters('vmHostNamePrefix'), 'internal-lb'), 'LBBE')]"
         },
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'external-lb')),'/backendAddressPools/LBBE')]"
+          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', concat(parameters('vmHostNamePrefix'), 'external-lb'), 'LBBE')]"
         }
       ],
       "gateway": [
         {
-          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',concat(parameters('vmHostNamePrefix'), 'internal-lb')),'/backendAddressPools/LBBE')]"
+          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', concat(parameters('vmHostNamePrefix'), 'internal-lb'), 'LBBE')]"
         }
       ]
     },
@@ -1924,6 +1961,7 @@
       "kibanaHttps": "[variables('kibanaHttps')]",
       "kibanaYaml": "[parameters('kibanaAdditionalYaml')]",
       "vmSizeLogstash": "[parameters('vmSizeLogstash')]",
+      "vmLogstashCount": "[parameters('vmLogstashCount')]",
       "vmLogstashAcceleratedNetworking": "[parameters('vmLogstashAcceleratedNetworking')]",
       "logstash": "[parameters('logstash')]",
       "logstashHeapSize": "[parameters('logstashHeapSize')]",
@@ -1955,14 +1993,16 @@
       "applicationGatewaySubnet": {
         "name": "[parameters('vNetAppGatewaySubnetName')]",
         "addressPrefix": "[parameters('vNetNewAppGatewaySubnetAddressPrefix')]"
-      }
+      },
+      "internalSku": "[parameters('loadBalancerInternalSku')]",
+      "externalSku": "[parameters('loadBalancerExternalSku')]"
     },
     "commonVmSettings": {
       "namespacePrefix": "[parameters('vmHostNamePrefix')]",
       "storageAccountName": "[concat('elastic', uniqueString(resourceGroup().id, deployment().name))]",
       "location": "[variables('location')]",
       "subnet": "[variables('networkSettings').subnet]",
-      "subnetId": "[concat(resourceId(variables('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks', variables('networkSettings').name), '/subnets/', variables('networkSettings').subnet.name)]",
+      "subnetId": "[resourceId(variables('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', variables('networkSettings').name, variables('networkSettings').subnet.name)]",
       "credentials": {
         "adminUsername": "[parameters('adminUsername')]",
         "password": "[parameters('adminPassword')]",
@@ -1985,13 +2025,13 @@
       "No": "empty/empty-kibana-ip-resources.json",
       "Yes": "ips/kibana-ip-resources.json"
     },
-    "kibanaIpTemplateUrl": "[concat(variables('templateBaseUrl'), variables('kibanaIpTemplates')[variables('topologySettings').kibana])]"
+    "kibanaIpTemplateUrl": "[uri(parameters('_artifactsLocation'), concat(variables('kibanaIpTemplates')[variables('topologySettings').kibana], parameters('_artifactsLocationSasToken')))]"
   },
   "resources": [
     {
       "name": "[parameters('elasticTags').tracking]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -2004,7 +2044,7 @@
     {
       "name": "shared",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -2031,7 +2071,7 @@
       "condition": "[equals(parameters('vNetNewOrExisting'), 'new')]",
       "name": "network",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -2054,7 +2094,7 @@
     {
       "name": "kibana-ip",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -2080,7 +2120,7 @@
     {
       "name": "loadbalancer",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "dependsOn": [
         "[concat('Microsoft.Resources/deployments/', 'shared')]",
         "[concat('Microsoft.Resources/deployments/', 'network')]"
@@ -2107,7 +2147,7 @@
     {
       "name": "virtual-machines",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "dependsOn": [
         "[concat('Microsoft.Resources/deployments/', 'loadbalancer')]",
         "[concat('Microsoft.Resources/deployments/', 'kibana-ip')]"
@@ -2119,8 +2159,11 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "templateBaseUrl": {
-            "value": "[variables('templateBaseUrl')]"
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
           },
           "esSettings": {
             "value": "[variables('esSettings')]"
