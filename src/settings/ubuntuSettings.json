@@ -2,11 +2,18 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "templateBaseUrl": {
-        "type": "string",
-        "metadata": {
-            "description": "The base url for templates"
-        }
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+          "description": "The base URI where artifacts required by this template are located including a trailing '/'"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+      },
+      "defaultValue": ""
     },
     "esSettings": {
         "type": "object",
@@ -71,7 +78,7 @@
     "doublequote": "\"",
     "backslash": "\\",
     "escapedQuote": "[concat(variables('quote'), variables('doublequote'), variables('quote'), variables('doublequote'), variables('quote'))]",
-    "nodesTemplateUrl": "[concat(parameters('templateBaseUrl'), 'partials/node-resources.json')]",
+    "nodesTemplateUrl": "[uri(parameters('_artifactsLocation'), concat('partials/node-resources.json', parameters('_artifactsLocationSasToken')))]",
     "namespacePrefix": "[parameters('topologySettings').vmHostNamePrefix]",
     "kibanaDomainName": "[if(not(empty(parameters('esSettings').samlMetadataUri)),if(not(empty(parameters('esSettings').samlServiceProviderUri)),parameters('esSettings').samlServiceProviderUri,parameters('kibanaIp')),'')]",
     "loadBalancerIp": "[concat(if(equals(parameters('networkSettings').https, 'Yes'), 'https', 'http'), '://', parameters('topologySettings').vNetLoadBalancerIp, ':9200')]",
@@ -103,12 +110,11 @@
 	"metricbeatInstallParams": "[concat(' -L ', parameters('metricbeatSettings').host, ' -u ', parameters('metricbeatSettings').user, ' -p ', parameters('metricbeatSettings').pass)]",
 	"metricbeatInstallCommand": "[if(equals(parameters('metricbeatSettings').enabled, 'Yes'), concat('; bash metricbeat-install.sh', variables('metricbeatInstallParams'), '')]",
     "ubuntuScripts": [
-      "[concat(parameters('templateBaseUrl'), 'scripts/elasticsearch-install.sh')]",
-	  "[concat(parameters('templateBaseUrl'), 'scripts/metricbeat-install.sh')]",
-      "[concat(parameters('templateBaseUrl'), 'scripts/kibana-install.sh')]",
-      "[concat(parameters('templateBaseUrl'), 'scripts/logstash-install.sh')]",
-      "[concat(parameters('templateBaseUrl'), 'scripts/vm-disk-utils-0.1.sh')]",
-      "[concat(parameters('templateBaseUrl'), 'scripts/java-install.sh')]"
+      "[uri(parameters('_artifactsLocation'), concat('scripts/elasticsearch-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/kibana-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/logstash-install.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/vm-disk-utils-0.1.sh', parameters('_artifactsLocationSasToken')))]",
+      "[uri(parameters('_artifactsLocation'), concat('scripts/java-install.sh', parameters('_artifactsLocationSasToken')))]"
     ],
     "ubuntuSettings": {
       "imageReference": {
@@ -186,7 +192,7 @@
     {
       "name": "elasticsearch-nodes",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-01",
       "dependsOn": [ ],
       "properties": {
         "mode": "Incremental",
@@ -195,8 +201,11 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "templateBaseUrl": {
-            "value": "[parameters('templateBaseUrl')]"
+          "_artifactsLocation": {
+            "value": "[parameters('_artifactsLocation')]"
+          },
+          "_artifactsLocationSasToken": {
+            "value": "[parameters('_artifactsLocationSasToken')]"
           },
           "osSettings": {
             "value": "[variables('ubuntuSettings')]"

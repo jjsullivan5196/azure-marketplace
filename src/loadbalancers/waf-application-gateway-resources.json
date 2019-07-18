@@ -58,10 +58,13 @@
   },
   "resources": [
     {
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-04-01",
       "name": "[variables('internalLoadBalancerName')]",
       "type": "Microsoft.Network/loadBalancers",
       "location": "[parameters('networkSettings').location]",
+      "sku": {
+        "name": "[parameters('networkSettings').internalSku]"
+      },
       "tags": {
         "provider": "[toUpper(parameters('elasticTags').provider)]"
       },
@@ -71,7 +74,7 @@
             "name": "LBFE",
             "properties": {
               "subnet": {
-                "id": "[concat(resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks',parameters('networkSettings').name), '/subnets/', parameters('networkSettings').subnet.name)]"
+                "id": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').subnet.name)]"
               },
               "privateIPAddress": "[parameters('networkSettings').subnet.loadBalancerIp]",
               "privateIPAllocationMethod": "Static"
@@ -88,10 +91,10 @@
             "name": "es-http-internal",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('internalLoadBalancerName')),'/frontendIPConfigurations/LBFE')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('internalLoadBalancerName'), 'LBFE')]"
               },
               "backendAddressPool": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('internalLoadBalancerName')),'/backendAddressPools/LBBE')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('internalLoadBalancerName'), 'LBBE')]"
               },
               "protocol": "Tcp",
               "frontendPort": 9200,
@@ -99,7 +102,7 @@
               "enableFloatingIP": false,
               "idleTimeoutInMinutes": 5,
               "probe": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('internalLoadBalancerName')),'/probes/es-probe-internal-http')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('internalLoadBalancerName'), 'es-probe-internal-http')]"
               }
             }
           },
@@ -107,10 +110,10 @@
             "name": "es-transport-internal",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('internalLoadBalancerName')),'/frontendIPConfigurations/LBFE')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', variables('internalLoadBalancerName'), 'LBFE')]"
               },
               "backendAddressPool": {
-                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('internalLoadBalancerName')),'/backendAddressPools/LBBE')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('internalLoadBalancerName'), 'LBBE')]"
               },
               "protocol": "Tcp",
               "frontendPort": 9300,
@@ -134,7 +137,7 @@
       }
     },
     {
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('applicationGatewayIp')]",
       "location": "[parameters('networkSettings').location]",
@@ -146,7 +149,7 @@
       }
     },
     {
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-04-01",
       "name": "[variables('applicationGatewayName')]",
       "type": "Microsoft.Network/applicationGateways",
       "location": "[parameters('networkSettings').location]",
@@ -177,7 +180,7 @@
             "name": "es-app-gateway-ip",
             "properties": {
               "subnet": {
-                "id": "[concat(resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks',parameters('networkSettings').name), '/subnets/', parameters('networkSettings').applicationGatewaySubnet.name)]"
+                "id": "[resourceId(parameters('networkSettings').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('networkSettings').name, parameters('networkSettings').applicationGatewaySubnet.name)]"
               }
             }
           }
@@ -187,7 +190,7 @@
             "name": "es-app-gateway-fip",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('applicationGatewayIp'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('applicationGatewayIp'))]"
               }
             }
           }
@@ -279,7 +282,10 @@
               "timeout": 30,
               "unhealthyThreshold": 3,
               "match": {
-                "statusCodes": ["200-399", "401"],
+                "statusCodes": [
+                  "200-399",
+                  "401"
+                ],
                 "body": ""
               }
             }
@@ -288,7 +294,7 @@
       }
     }
   ],
-  "outputs" : {
+  "outputs": {
     "fqdn": {
       "value": "N/A",
       "type": "string"

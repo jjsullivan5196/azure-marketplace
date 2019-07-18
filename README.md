@@ -1,21 +1,5 @@
 # Elastic Stack Azure Marketplace offering
 
-### :warning: VERY IMPORTANT
-
-By default, this template does not configure*
-
-* SSL/TLS for communication with Elasticsearch via the HTTP layer through an external load balancer
-* SSL/TLS for communication with Elasticsearch via the HTTP layer through Application Gateway
-* SSL/TLS for communication between Elasticsearch nodes via the Transport layer
-* SSL/TLS for communication beween the browser and Kibana
-
-**It is strongly recommended that you secure communication before using in production.**
-
-Please read the [Configuring TLS](#configuring-tls) section for securing communication with
-Transport Layer Security.
-
----
-
 Easily deploy the Elastic Stack of Elasticsearch, Kibana and Logstash to Azure.
 
 This readme provides an overview of usage and features. For more comprehensive documentation, 
@@ -108,9 +92,14 @@ value defined in the template.
 <table>
   <tr><th>Parameter</td><th>Type</th><th>Description</th><th>Default Value</th></tr>
 
-  <tr><td>artifactsBaseUrl</td><td>string</td>
-    <td>The base url of the Elastic ARM template.
-    <strong>Required</strong></td><td>Raw content of the current branch</td></tr>
+  <tr><td>_artifactsLocation</td><td>string</td>
+    <td>The base URI where artifacts required by this template are located, including a trailing '/'.
+    <strong>Use to target a specific branch or release tag</strong></td><td>Raw content of the current branch</td></tr>
+
+  <tr><td>_artifactsLocationSasToken</td><td>securestring</td>
+    <td>The sasToken required to access <code>_artifactsLocation</code>. When the template is deployed using 
+    the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."</td>
+    <td><code>""</code></td></tr>
 
   <tr><td>location</td><td>string</td>
     <td>The location where to provision all the items in this template. Defaults to inheriting the location
@@ -145,6 +134,20 @@ value defined in the template.
     <p><strong>If you are setting up Elasticsearch or Kibana on a publicly available IP address, it is highly recommended to secure access to the cluster with a product like 
     <a href="https://www.elastic.co/products/x-pack/security">Elastic Stack Security</a>, in addition to configuring SSL/TLS.</strong></p>
     </td><td><code>internal</code></td></tr>
+
+  <tr><td>loadBalancerInternalSku</td><td>string</td>
+    <td>The internal load balancer SKU. Can be <code>Basic</code> or <code>Standard</code>.</td>
+    </td><td><code>Basic</code></td>
+  </tr>
+
+  <tr><td>loadBalancerExternalSku</td><td>string</td>
+    <td>The external load balancer SKU. Can be <code>Basic</code> or <code>Standard</code>.
+      Only relevant when <code>loadBalancerType</code> is <code>external</code>. When the <code>Standard</code> 
+      load balancer SKU is selected, the public IP address SKU attached to the external load balancer 
+      will also be <code>Standard</code>.
+    </td>
+    </td><td><code>Basic</code></td>
+  </tr>
 
   <tr><td id="x-pack">xpackPlugins</td><td>string</td>
     <td>Either <code>Yes</code> or <code>No</code> to install a trial license of the <a href="https://www.elastic.co/products/x-pack">Elastic Stack features (formerly X-Pack)</a>
@@ -426,13 +429,17 @@ value defined in the template.
   <tr><td colspan="4" style="font-size:120%"><strong>Logstash related settings</strong></td></tr>
 
   <tr><td>logstash</td><td>string</td>
-    <td>Either <code>Yes</code> or <code>No</code> to provision a machine with Logstash installed.
+    <td>Either <code>Yes</code> or <code>No</code> to provision Logstash VMs.
     </td><td><code>No</code></td></tr>
 
   <tr><td>vmSizeLogstash</td><td>string</td>
     <td>Azure VM size of the Logstash instance. See <a href="https://github.com/elastic/azure-marketplace/blob/master/build/allowedValues.json">this list for supported sizes</a>.
     <strong>Check that the size you select is <a href="https://azure.microsoft.com/en-au/regions/services/">available in the region you choose</a></strong>.
     </td><td><code>Standard_D1</code></td></tr>
+
+  <tr><td>vmLogstashCount</td><td>int</td>
+    <td>The number of Logstash instances
+    </td><td><code>1</code></td></tr>
 
   <tr><td>vmLogstashAcceleratedNetworking</td><td>string</td>
     <td>Whether to enable <a href="https://azure.microsoft.com/en-us/blog/maximize-your-vm-s-performance-with-accelerated-networking-now-generally-available-for-both-windows-and-linux/">accelerated networking</a> for Logstash, which enables single root I/O virtualization (SR-IOV) 
@@ -627,8 +634,8 @@ where `<name>` refers to the resource group you just created.
 
   ```powershell
   $clusterParameters = @{
-      "artifactsBaseUrl"="https://raw.githubusercontent.com/elastic/azure-marketplace/master/src"
-      "esVersion" = "7.1.1"
+      "_artifactsLocation" = "https://raw.githubusercontent.com/elastic/azure-marketplace/master/src/"
+      "esVersion" = "7.2.0"
       "esClusterName" = "elasticsearch"
       "loadBalancerType" = "internal"
       "vmDataDiskCount" = 1
@@ -659,7 +666,7 @@ where `<name>` refers to the resource group you just created.
 ## Targeting a specific template version
 
 You can target a specific version of the template by modifying the URI of the template and 
-the artifactsBaseUrl parameter of the template to point to a specific tagged release.
+the `_artifactsLocation` parameter of the template to point to a specific tagged release.
 
 **Targeting a specific template version is recommended for repeatable production deployments.**
 
@@ -667,11 +674,11 @@ For example, to target the [`7.0.0` tag release with PowerShell](https://github.
 
 ```powershell
 $templateVersion = "7.0.0"
-$templateBaseUrl = "https://raw.githubusercontent.com/elastic/azure-marketplace/$templateVersion/src"
+$_artifactsLocation = "https://raw.githubusercontent.com/elastic/azure-marketplace/$templateVersion/src/"
 
 # minimum parameters required to deploy
 $clusterParameters = @{
-  "artifactsBaseUrl" = $templateBaseUrl
+  "_artifactsLocation" = $_artifactsLocation
   "esVersion" = "7.0.0"
   "adminUsername" = "russ"
   "adminPassword" = "Password1234"
@@ -689,22 +696,21 @@ $location = "Australia Southeast"
 $name = "my-azure-cluster"
 
 New-AzureRmResourceGroup -Name $resourceGroup -Location $location
-New-AzureRmResourceGroupDeployment -Name $name -ResourceGroupName $resourceGroup -TemplateUri "$templateBaseUrl/mainTemplate.json" -TemplateParameterObject $clusterParameters
+New-AzureRmResourceGroupDeployment -Name $name -ResourceGroupName $resourceGroup -TemplateUri "$_artifactsLocation/mainTemplate.json" -TemplateParameterObject $clusterParameters
 ```
 
 ## Configuring TLS
 
-It is strongly recommended that you secure communication when using the template
-in production. The Elastic Stack security features can provide Authentication and 
-Role Based Access control, and Transport Layer Security (TLS) can be configured 
+**It is strongly recommended that you secure communication using Transport Layer Security when using the template**. 
+The Elastic Stack security features can provide Basic Authentication, 
+Role Based Access control, and Transport Layer Security (TLS)
 for both Elasticsearch and Kibana. For more details, please refer to 
 [the Security documentation](https://www.elastic.co/guide/en/elastic-stack-deploy/current/azure-arm-template-security.html).
 
 For Elasticsearch versions 6.8.0+ (and less than 7.0.0), and 7.1.0+, the Elastic Stack security features
-that allow configuring TLS and role based access control are available in the free basic license level. 
-For all other versions, the Elastic Stack security 
-features require a license level higher than basic; They can be configured with a trial license, 
-which provides access to the security features for 30 days.
+that allow configuring TLS and role based access control are available in the free basic license tier. 
+For all other versions, the Elastic Stack security features require a license level higher than basic; 
+They can be configured with a trial license, which provides access to the Security features for 30 days.
 
 ### TLS for Kibana
 
