@@ -87,6 +87,26 @@
         "description": "The external load balancer SKU type. Only valid when loadBalancerType is 'external'"
       }
     },
+    "metricbeat": {
+      "type": "string",
+	  "allowedValues": [
+	    "Yes",
+		"No"
+	  ],
+	  "defaultValue": "No"
+    },
+	"metricbeatHost": {
+	  "type": "string",
+	  "defaultValue": ""
+	},
+	"metricbeatUser": {
+	  "type": "string",
+	  "defaultValue": ""
+	},
+	"metricbeatPassword": {
+	  "type": "string",
+	  "defaultValue": ""
+	},
     "azureCloudPlugin": {
       "type": "string",
       "allowedValues": [
