@@ -1197,6 +1197,7 @@ configure_os_properties()
     {
       echo "[Service]"
       echo "LimitMEMLOCK=infinity"
+	  echo "Restart=always"
     } > $SYSTEMD_OVERRIDES/override.conf
 
     log "[configure_os_properties] configure systemd to start Elasticsearch service automatically when system boots"
